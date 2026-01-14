@@ -1,0 +1,81 @@
+= 0315
+
+A language where the only type of data is the sequence, and numeric literals correspond to OEIS sequence IDs.
+
+== Syntax
+
+Natural literals refer to OEIS sequences by ID (the `+A+` prefix is implicit, and you can omit leading zeros). For example, `+27+` is the sequence _1, 2, 3, …_ since https://oeis.org/A000027[A000027] is that sequence.
+
+You can bind a sequence to a name of one or more ASCII letters using `+name:value+`. `+:+` tries to consume as much as it can to its right, so for example `+two:12+12+` binds `+12+12+` to `+two+`, not `+12+`. After that, you can access a variable by just using its name.
+
+You can operate on sequences with operators, which have the following precedence:
+
+|===
+.2+|0 (highest)|`+[]+`|Index
+|`+{}+`|Filter
+.3+|1|prefix `+-+`|Negate
+|prefix `+\|+`|Absolute Value
+|prefix `+&+`|Character
+|2|left-infix `+.+`|Compose
+|3|right-infix `+^+`|Power
+.3+|4|left-infix `+*+`|Multiply
+|left-infix `+/+`|Floored Divide
+|left-infix `+%+`|Modulo
+.2+|5|left-infix `+++`|Add
+|left-infix `+-+`|Subtract
+|6|infix `+<+`|Less Than
+|7|infix `+=+`|Equal To
+.2+|8 (lowest)|infix `+,+`|Untriangle
+|infix `+;+`|Unsquare
+|===
+
+The arithmetic operations apply componentwise, mapping if unary and zipping if binary.
+
+The "character" of a sequence is a sequence of nonnegative integers that has, at each position `+n+` in the sequence, a count of how many times `+n+` appears in the original sequence. Because sequences are infinite and lazy, this only works when the argument is weakly increasing. There's no check for this (nor can there be), so make sure you know what you're doing. For example, https://oeis.org/A000079[`+79+`] is the sequence of powers of two, and https://oeis.org/A209229[`+209229+`] is the sequence that has 1 at positions that are powers of two and 0 otherwise. `+&79+` is identical to `+209229+`.
+
+Index and Compose are the same exact operation: each item in the right sequence is replaced by the element of the left sequence at position indicated by the item. If an index is negative, it results in zero.
+
+Filter repeats each item in the left sequence how many times the corresponding item in the right sequence asks it to. For example, https://oeis.org/A001477[`+1477+`] is the sequence of nonnegative integers, and https://oeis.org/A002024[`+2024+`] is the sequence where each number appears that many times. `+1477{1477}+` is identical to `+2024+`.
+
+Untriangle is a way to deal with triangular sequences such as https://oeis.org/A007318[`+7318+`], the sequence of binomial coefficients. Binomial coefficients are in some sense a two-index sequence. The two operations convert two indices into a single index into the flattened representation that appears in the OEIS sequences. Untriable takes each element of the left sequence, treats it as the index of a row, and then uses each element of the right sequence as the index of a column. Because the right sequence can be infinite, it is assumed that once it reaches a position that is too big to be a valid triangle index, there will be no more valid indices and the operation jumps to the next row. The operation is intended to be used as the right argument to an Index. For example, https://oeis.org/A001477[`+1477+`] is the sequence of nonnegative integers and https://oeis.org/A005843[`+5843+`] is the sequence of even nonnegative integers. `+5843,1477+` generates indices that index a triangle with all indices of type (2n, k). Using this as indices to the binomial triangle, the result is https://oeis.org/A034870[`+34870+`], the sequence of even-numbered rows of the Pascal triangle. The untriangling operation, specifically, is (i, j) -> i(i+1)/2 + j. You might also want a different operation where the two lists are zipped together for untriangling instead of the right one being reused for each row. You can get that by reimplementing the operation, such as with `+217.i+j+`.
+
+Similarly, Unsquare deals with square sequences such as https://oeis.org/A003056[`+3056+`], the sequence of the table of a+b, read by antidiagonals. `+i;j+` iterates all pairs of i and j by antidiagonals, and combines the pairs with the unsquaring operation, (i, j) -> (i+j)(i+j+1)/2 + j. `+3056[5843;5843]+` is therefore the table of 2a+2b. Similarly to triangles, you can easily recreate the zipping operation.
+
+All infix operations, as well as `+[]+` and `+{}+`, evaluate the right hand side first, and the left hand side second. This is important if you use inline assignments.
+
+== Worked examples
+
+=== A050376
+
+Starting with something really simple, https://oeis.org/A050376[`+50736+`], the sequence of numbers that are perfect prime powers with exponents that are powers of two (image:https://math.vercel.app/?from=p\^{2^k}[p\^(2^k)]). There is a sequence for "the exponent if a number is a prime power, and zero otherwise": https://oeis.org/A100995[`+100995+`]. We use it as an index into https://oeis.org/A100995[`+209229+`] to see whether each of the powers is a power of two (zero is not a power of two). This is the mask that we need to use to filter the positive integers, https://oeis.org/A000027[`+27+`]. The final code is `+27{209229[100995]}+`. This can golf to `+27{&79.100995}+` (sometimes building a sequence is shorter than referring to it!).
+
+=== A383896
+
+Now for something more complex: I will be reimplementing sequence https://oeis.org/A383896[`+383896+`], Echo numbers: positive integers k such that the largest prime factor of k-1 is a suffix of k.
+
+There is a sequence for the greatest prime factor (GPF) of a number, https://oeis.org/A006530[`+6530+`], and there is a sequence for the length of a number in base ten, https://oeis.org/A055642[`+55642+`]. However, the former starts at n=1, and the latter at n=0. We want to shift `+6530+` to also start at 0, so that we can use it as an index into `+55642+` to get the length of the GPF. The simplest way to do this is to index into it using a sequence that goes _-1, 0, 1, …_. This is because negative indexes become zero. There is a sequence, https://oeis.org/A023443[`+23443+`], that goes exactly like that.
+
+----
+lengthBaseTen:55642
+gpf:6530[fromMinusOne]
+fromMinusOne:23443
+----
+
+Now, we want to check that the last `+lengthBaseTen[gpf]+` digits of the numbers one more than each index are equal to the corresponding GPF itself. To do that, we can just raise ten to the power of the lengths, use it as a modulo on the positive integers, and then check for equality with `+gpf+`. However, there is no sequence for the number ten. There is a sequence for the number one, https://oeis.org/A000012[`+12+`], and we have addition.
+
+----
+one:12
+two:one+one
+four:two+two
+eight:four+four
+ten:eight+two
+----
+
+Now we can combine all the pieces. We take the positive integers modulo (ten to the power of the length base ten of the GPFs), check that they're equal to the GPFs, and lastly filter the positive integers by that boolean mask. The only missing puzzle piece is https://oeis.org/A000027[`+27+`], the sequence of positive integers.
+
+----
+fromOne:27
+fromOne{gpf=fromOne%(ten^lengthBaseTen[gpf])}
+----
+
+Lastly, a little bit of golfing: `+27{27%(b+d:c+c:b+b:12+12)^55642.g=g:6530[23443]}+` (48 characters).
