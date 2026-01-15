@@ -72,7 +72,7 @@ sequences =
   , (001065, (a001065, "Sum of proper divisors of n"))
   , (055642, (a055642, "Number of digits in the decimal expansion of n"))
   , (000079, (a000079, "Powers of two"))
-  , (100995, (a100995, "If n is a prime power p^m, m &gt;= 1, then m, otherwise 0"))
+  , (100995, (a100995, "If n is a prime power p^m, m >= 1, then m, otherwise 0"))
   , (014963, (a014963, "Exponential of Mangoldt function M(n)"))
   , (023443, (a023443, "Numbers from negative one"))
   , (000326, (a000326, "Pentagonal numbers"))
