@@ -1,0 +1,7 @@
+packages: .
+
+source-repository-package
+  type: git
+  location: https://github.com/konn/ghc-wasm-earthly
+  tag: ef21ada9436046c7b118314d0c73752253ec58e1
+  subdir: ghc-wasm-compat

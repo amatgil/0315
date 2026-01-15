@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>0315 Playground</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+	</head>
+
+	<body class="container">
+		<h1 class="my-3">0315 Playground</h1>
+
+		<div class="row">
+			<textarea class="col-5 font-monospace" rows="10" id="input"></textarea>
+			<div class="col-2">
+				<button type="button" class="btn btn-secondary w-100 my-1" id="run">Run!</button>
+				<input type="number" min="0" max="100" id="count" value="20" placeholder="Maximum amount of numbers" class="form-control w-100">
+			</div>
+			<div id="output" class="col-5">
+
+			</div>
+		</div>
+
+		<h3 class="mt-4">Available sequences</h3>
+		<div id="sequences"></div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+		<script type="module" src="index.js"></script>
+	</body>
+</html>

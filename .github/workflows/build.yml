@@ -1,0 +1,108 @@
+name: Build
+on:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+
+jobs:
+  ubuntu:
+    name: Ubuntu 22.04
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      
+      - name: Setup GHC
+        uses: haskell-actions/setup@v2
+        id: setup-haskell
+        with:
+          ghc-version: '9.12.2'
+
+      - name: Dry run for cache key
+        run: 'cabal build exe:0315 --dry-run'
+      
+      - name: Cache
+        uses: actions/cache@v4
+        env:
+          platform: ubuntu
+        with:
+          path: |
+            ${{ steps.setup-haskell.outputs.cabal-store }}
+            dist-newstyle
+          key: ${{ env.platform }}-${{ hashFiles('dist-newstyle/cache/plan.json') }}
+          restore-keys: |
+            ${{ env.platform }}-
+            
+      - name: Build
+        run: 'cabal build exe:0315'
+
+      - name: Prepare artifact
+        run: 'cp $(cabal list-bin 0315 | tail -n 1) ./0315'
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: '0315'
+          path: './0315'
+        
+  windows:
+    name: Windows
+    runs-on: windows-2022
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      
+      - name: Setup GHC
+        uses: haskell-actions/setup@v2
+        id: setup-haskell
+        with:
+          ghc-version: '9.12.2'
+
+      - name: Hack part 0
+        run: 'rm -rf ./dist-newstyle/src'
+        shell: bash
+
+      - name: Dry run for cache key
+        run: 'cabal build exe:0315 --dry-run'
+        shell: bash
+
+      - name: Hack part 1
+        run: 'rm -rf ./dist-newstyle/src'
+        shell: bash
+      
+      - name: Cache
+        uses: actions/cache@v4
+        env:
+          platform: windows
+        with:
+          path: |
+            ${{ steps.setup-haskell.outputs.cabal-store }}
+            dist-newstyle
+          key: ${{ env.platform }}-${{ hashFiles('dist-newstyle/cache/plan.json') }}
+          restore-keys: |
+            ${{ env.platform }}-
+
+      - name: Hack part 2
+        run: 'rm -rf ./dist-newstyle/src'
+        shell: bash
+
+      - name: Build
+        run: 'cabal build exe:0315'
+        shell: bash
+
+      - name: Hack part 3
+        run: 'rm -rf ./dist-newstyle/src'
+        shell: bash
+
+      - name: Prepare artifact
+        run: 'cp $(cabal list-bin 0315 | tail -n 1) ./0315.exe'
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: '0315.exe'
+          path: './0315.exe'

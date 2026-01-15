@@ -2,6 +2,7 @@ module Lang0315.Interpreter
 ( interpret
 , Context
 , runContext
+, sequences
 ) where
 
 import Lang0315.Parser (Expr(..))
