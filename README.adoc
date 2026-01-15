@@ -2,6 +2,8 @@
 
 A language where the only type of data is the sequence, and numeric literals correspond to OEIS sequence IDs.
 
+https://rubenverg.github.io/0315[Online Playground]
+
 == Syntax
 
 Natural literals refer to OEIS sequences by ID (the `+A+` prefix is implicit, and you can omit leading zeros). For example, `+27+` is the sequence _1, 2, 3, …_ since https://oeis.org/A000027[A000027] is that sequence.
