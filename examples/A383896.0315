@@ -1,16 +1,12 @@
 // A383896
 // Echo numbers: positive integers k such that the largest prime factor of k-1 is a suffix of k.
 
-one:12
-two:one+one
-four:two+two
-eight:four+four
-ten:eight+two
 fromMinusOne:23443
 fromOne:27
 lengthBaseTen:55642
+powersOfTen:11557
 gpf:6530[fromMinusOne]
-fromOne{gpf=fromOne%(ten^lengthBaseTen[gpf])}
+fromOne{gpf=fromOne%powersOfTen[lengthBaseTen[gpf]]}
 
 // golfed:
-27{27%(b+d:c+c:b+b:12+12)^55642.g=g:6530[23443]}
+27{27%11557.55642.g=g:6530.23443}

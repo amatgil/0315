@@ -63,21 +63,12 @@ fromMinusOne:23443
 gpf:6530[fromMinusOne]
 ----
 
-Now, we want to check that the last `+lengthBaseTen[gpf]+` digits of the numbers one more than each index are equal to the corresponding GPF itself. To do that, we can just raise ten to the power of the lengths, use it as a modulo on the positive integers, and then check for equality with `+gpf+`. However, there is no sequence for the number ten. There is a sequence for the number one, https://oeis.org/A000012[`+12+`], and we have addition.
-
-----
-one:12
-two:one+one
-four:two+two
-eight:four+four
-ten:eight+two
-----
-
-Now we can combine all the pieces. We take the positive integers modulo (ten to the power of the length base ten of the GPFs), check that they're equal to the GPFs, and lastly filter the positive integers by that boolean mask. The only missing puzzle piece is https://oeis.org/A000027[`+27+`], the sequence of positive integers.
+Now, we want to check that the last `+lengthBaseTen[gpf]+` digits of the numbers one more than each index are equal to the corresponding GPF itself. To do that, we can just raise ten to the power of the lengths, use it as a modulo on the positive integers, and then check for equality with `+gpf+`. There is a sequence for the powers of ten, https://oeis.org/A011557[`+11557+`]. Now we can combine all the pieces. We take the positive integers modulo (ten to the power of the length base ten of the GPFs), check that they're equal to the GPFs, and lastly filter the positive integers by that boolean mask. The last missing thing is https://oeis.org/A000027[`+27+`], the sequence of positive integers.
 
 ----
 fromOne:27
-fromOne{gpf=fromOne%(ten^lengthBaseTen[gpf])}
+powersOfTen:11557
+fromOne{gpf=fromOne%powersOfTen[lengthBaseTen[gpf]]}
 ----
 
-Lastly, a little bit of golfing: `+27{27%(b+d:c+c:b+b:12+12)^55642.g=g:6530[23443]}+` (48 characters).
+Lastly, a little bit of golfing: `+27{27%11557.55642.g=g:6530.23443}+` (33 characters).

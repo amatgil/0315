@@ -109,6 +109,7 @@ sequences =
   , (000593, a000593)
   , (001097, a001097)
   , (006882, a006882)
+  , (011557, a011557)
   ]
 
 type Context = ExceptT String (State [(String, Sequence)])

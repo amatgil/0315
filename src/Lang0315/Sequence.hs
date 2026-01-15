@@ -105,6 +105,7 @@ module Lang0315.Sequence
 , a000593
 , a001097
 , a006882
+, a011557
 ) where
 
 import Control.Monad ((>=>))
@@ -242,7 +243,7 @@ a000312, a000302, a000670, a001006, a010060, a001065, a055642, a000079, a100995,
 a023443, a000326, a000166, a000330, a002620, a001511, a004526, a000085, a001227, a001906 :: Sequence
 a000124, a001405, a000583, a018252, a001157, a001700, a008292, a005101, a001615, a003418 :: Sequence
 a000169, a246655, a027641, a027642, a000272, a000004, a000204, a000069, a002322, a001969 :: Sequence
-a000002, a003056, a000593, a001097, a006882 :: Sequence
+a000002, a003056, a000593, a001097, a006882, a011557 :: Sequence
 a000012 = Sequence $ repeat 1
 a001477 = Sequence $ enumFrom 0
 a000027 = Sequence $ enumFrom 1
@@ -304,13 +305,13 @@ a001764 = Sequence $ ofIndices $ \n -> binomial (3 * n) n `div` (2 * n + 1)
 a001147 = Sequence $ scanl (\acc n -> acc * (2 * n + 1)) 1 $ enumFrom 0
 a008277 = Sequence $ ofIndices $ genericIndex $ concatMap (drop 1) (IL.toList Rec.stirling2)
 a000312 = Sequence $ ofIndices $ \n -> n ^ n
-a000302 = Sequence $ ofIndices $ \n -> 4 ^ n
+a000302 = Sequence $ scanl (*) 1 $ repeat 4
 a000670 = Sequence $ ofIndices $ \n -> sum $ map (\k -> stirling2 n k * Rec.factorial `infiniteIndex` k) [0..n]
 a001006 = Sequence $ ofIndices $ \n -> sum $ map (\k -> (binomial (2 * k) k `div` (k + 1)) * binomial n (2 * k)) [0..n `div` 2]
 a010060 = Sequence $ ofIndices $ (`mod` 2) . fromIntegral . popCount
 a001065 = Sequence $ ofPositive $ \n -> AF.sigma 1 n - n
 a055642 = Sequence $ ofIndices $ let go count m = if m >= 10 then go (count + 1) (m `div` 10) else count in go 1
-a000079 = Sequence $ ofIndices $ \n -> 2 ^ n
+a000079 = Sequence $ scanl (*) 1 $ repeat 2
 a100995 = Sequence $ ofPositive $ \n -> case factorise n of
   [(_, e)] -> fromIntegral e
   _ -> 0
@@ -352,3 +353,4 @@ a003056 = Sequence $ byAntiDiagonals (+) (enumFrom 0) (enumFrom 0)
 a000593 = Sequence $ ofPositive $ \n -> AF.sigma 1 n - if even n then 2 * AF.sigma 1 (n `div` 2) else 0
 a001097 = Sequence $ map unPrime $ filter (\p -> let p' = unPrime p in unPrime (pred p) == p' - 2 || unPrime (succ p) == p' + 2) $ drop 1 primes
 a006882 = Sequence df where df = 1 : 1 : zipWith (*) [2..] df
+a011557 = Sequence $ scanl (*) 1 $ repeat 10
